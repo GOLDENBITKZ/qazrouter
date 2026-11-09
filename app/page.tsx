@@ -116,6 +116,9 @@ export default async function HomePage({
   searchParams: Promise<{ authError?: string }>;
 }) {
   const { authError } = await searchParams;
+  const apiConfigured = Boolean(
+    process.env.LITELLM_BASE_URL && process.env.PII_SCANNER_URL
+  );
 
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -141,7 +144,7 @@ export default async function HomePage({
         <div className="flex items-center gap-3">
           <span className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-3 py-1.5 text-xs text-slate-400 sm:flex">
             <StatusDot />
-            API online
+            {apiConfigured ? "API online" : "MVP preview"}
           </span>
           <Link
             href="/api/auth/github"

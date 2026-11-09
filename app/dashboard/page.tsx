@@ -163,6 +163,9 @@ export default async function DashboardPage() {
     pending_topups: 0
   }) as DashboardMetrics;
   const displayName = profile.full_name || user.email || "Разработчик";
+  const gatewayConfigured = Boolean(
+    process.env.LITELLM_BASE_URL && process.env.PII_SCANNER_URL
+  );
   const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
   const endpoint = productionHost
     ? `https://${productionHost.replace(/^https?:\/\//, "")}`
@@ -178,7 +181,9 @@ export default async function DashboardPage() {
             <span className="hidden h-5 w-px bg-white/10 sm:block" />
             <span className="hidden items-center gap-2 text-xs text-slate-500 sm:flex">
               <StatusDot />
-              Все системы работают
+              {gatewayConfigured
+                ? "Все системы работают"
+                : "MVP · AI-шлюз не подключён"}
             </span>
           </div>
 
