@@ -163,9 +163,11 @@ export default async function DashboardPage() {
     pending_topups: 0
   }) as DashboardMetrics;
   const displayName = profile.full_name || user.email || "Разработчик";
-  const endpoint =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://your-domain.kz";
+  const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const endpoint = productionHost
+    ? `https://${productionHost.replace(/^https?:\/\//, "")}`
+    : process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+      "https://your-domain.kz";
 
   return (
     <main className="min-h-screen">
