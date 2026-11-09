@@ -1,0 +1,81 @@
+name: qazrouter-local-gateway
+
+services:
+  pii-scanner:
+    build:
+      context: ./services/pii-scanner
+    restart: unless-stopped
+    env_file:
+      - .env.local
+    environment:
+      NER_ENABLED: "true"
+      NER_MODEL: urchade/gliner_multi_pii-v1
+      NER_THRESHOLD: "0.42"
+    ports:
+      - "127.0.0.1:8001:8000"
+    volumes:
+      - pii-models:/models
+    tmpfs:
+      - /tmp:size=64m
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 90s
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --appendonly
+      - "no"
+      - --save
+      - ""
+      - --requirepass
+      - ${REDIS_PASSWORD}
+    volumes:
+      - litellm-cache:/data
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    restart: unless-stopped
+    env_file:
+      - .env.local
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+    command:
+      - --config
+      - /app/config.yaml
+      - --port
+      - "4000"
+      - --num_workers
+      - "1"
+    ports:
+      - "127.0.0.1:4000:4000"
+    volumes:
+      - ./litellm/config.yaml:/app/config.yaml:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  pii-models:
+  litellm-cache:

@@ -1,0 +1,87 @@
+# QazRouter LiteLLM Proxy.
+# Сюда попадают только сообщения после локального PII-сканирования.
+
+model_list:
+  - model_name: kz-deepseek
+    litellm_params:
+      model: deepseek/deepseek-chat
+      api_key: os.environ/DEEPSEEK_API_KEY
+      timeout: 46
+      num_retries: 0
+    model_info:
+      mode: chat
+
+  - model_name: kz-gemini
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_API_KEY
+      timeout: 46
+      num_retries: 0
+    model_info:
+      mode: chat
+
+  - model_name: kz-gpt
+    litellm_params:
+      model: os.environ/KZ_GPT_UPSTREAM_MODEL
+      api_key: os.environ/OPENAI_API_KEY
+      timeout: 46
+      num_retries: 0
+    model_info:
+      mode: chat
+
+  - model_name: kz-claude
+    litellm_params:
+      model: os.environ/KZ_CLAUDE_UPSTREAM_MODEL
+      api_key: os.environ/ANTHROPIC_API_KEY
+      timeout: 46
+      num_retries: 0
+    model_info:
+      mode: chat
+
+  - model_name: kz-qwen
+    litellm_params:
+      model: os.environ/KZ_QWEN_UPSTREAM_MODEL
+      api_key: os.environ/OPENROUTER_API_KEY
+      timeout: 46
+      num_retries: 0
+    model_info:
+      mode: chat
+
+  - model_name: kz-llama
+    litellm_params:
+      model: os.environ/KZ_LLAMA_UPSTREAM_MODEL
+      api_key: os.environ/GROQ_API_KEY
+      timeout: 46
+      num_retries: 0
+    model_info:
+      mode: chat
+
+litellm_settings:
+  drop_params: true
+  num_retries: 0
+  request_timeout: 50
+  set_verbose: false
+
+  # Не сохраняем тела сообщений в callback-логах LiteLLM.
+  turn_off_message_logging: true
+
+  # Кэшируются только уже обезличенные сообщения.
+  cache: true
+  cache_params:
+    type: redis
+    host: os.environ/REDIS_HOST
+    port: os.environ/REDIS_PORT
+    password: os.environ/REDIS_PASSWORD
+    ttl: 3600
+    supported_call_types:
+      - completion
+
+router_settings:
+  redis_host: os.environ/REDIS_HOST
+  redis_port: os.environ/REDIS_PORT
+  redis_password: os.environ/REDIS_PASSWORD
+  enable_pre_call_checks: true
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  store_model_in_db: false
