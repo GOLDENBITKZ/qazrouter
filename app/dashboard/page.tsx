@@ -97,7 +97,7 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/api/auth/github");
+    redirect("/login");
   }
 
   const [profileResult, keysResult, usageResult, metricsResult] =

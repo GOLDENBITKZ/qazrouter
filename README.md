@@ -81,6 +81,22 @@ Client получает нормальный ответ
 а юридическая гарантия требует аудита конкретной инфраструктуры и договоров с
 провайдерами.
 
+## Статус production MVP
+
+Публичный MVP развёрнут на `https://qazrouter.vercel.app`. Работают лендинг,
+регистрация через GitHub, email/пароль и magic-link, профиль, баланс и
+управление ключами.
+
+AI API остаётся закрытым в strict-режиме, пока рядом с ним не развернуты PII
+Scanner и LiteLLM. Если scanner недоступен, Vercel не отправляет prompt
+провайдеру. Это ограничение нельзя отключать для реальных персональных данных.
+
+Vercel AI Gateway предоставляет единый API к большому каталогу моделей,
+routing и spend tracking. На ноябрь 2026 бесплатный кредит $5 в месяц требует
+верификации карты без списания. Без карты доступны отдельные бесплатные модели.
+AI Gateway можно использовать как upstream LiteLLM, но он не заменяет локальный
+PII scanner.
+
 ## Быстрый запуск
 
 ### 1. Установить зависимости
@@ -150,6 +166,17 @@ npm run dev
 - Supabase callback: `https://<project>.supabase.co/auth/v1/callback`.
 - Redirect URL: `http://localhost:3000/auth/callback` для разработки.
 - Для production добавьте `https://your-domain.kz/auth/callback`.
+
+Вход по email включается автоматически через Supabase Email provider. В
+Supabase Authentication → URL Configuration должны быть разрешены:
+
+- `http://localhost:3000/auth/callback`;
+- `https://qazrouter.vercel.app/auth/callback`;
+- callback нового домена после его подключения.
+
+Встроенный SMTP Supabase подходит для ограниченного MVP. Для публичной
+регистрации необходимо подключить собственный SMTP-провайдер и настроить
+ограничения частоты.
 
 ## Переменные окружения
 

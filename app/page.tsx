@@ -7,7 +7,6 @@ import {
   DatabaseZap,
   FileCheck2,
   Fingerprint,
-  Github,
   KeyRound,
   LockKeyhole,
   Route,
@@ -147,10 +146,9 @@ export default async function HomePage({
             {apiConfigured ? "API online" : "MVP preview"}
           </span>
           <Link
-            href="/api/auth/github"
+            href="/login"
             className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-4 py-2.5 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/[0.1]"
           >
-            <Github className="h-4 w-4" />
             Войти
           </Link>
         </div>
@@ -188,11 +186,11 @@ export default async function HomePage({
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/api/auth/github"
+              href="/login?mode=register"
               className="group inline-flex items-center justify-center gap-3 rounded-xl bg-mint-400 px-6 py-3.5 text-sm font-semibold text-ink-950 shadow-[0_12px_40px_rgba(77,226,178,.18)] transition hover:-translate-y-0.5 hover:bg-[#65efc2]"
             >
-              <Github className="h-4 w-4" />
-              Войти через GitHub
+              <Sparkles className="h-4 w-4" />
+              Создать аккаунт
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <a
@@ -435,7 +433,7 @@ export default async function HomePage({
             <div className="flex flex-col gap-3 border-t border-white/[0.07] bg-white/[0.02] px-5 py-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-7">
               <span>Пополнение от 5 000 ₸. Комиссия сервиса уже включена.</span>
               <Link
-                href="/api/auth/github"
+                href="/login?mode=register"
                 className="inline-flex items-center gap-1.5 font-medium text-mint-400 hover:text-white"
               >
                 Начать работу
@@ -577,11 +575,11 @@ export default async function HomePage({
               запрос через OpenAI-compatible endpoint.
             </p>
             <Link
-              href="/api/auth/github"
+              href="/login?mode=register"
               className="mt-8 inline-flex items-center gap-2 rounded-xl bg-mint-400 px-6 py-3.5 text-sm font-semibold text-ink-950 transition hover:bg-[#65efc2]"
             >
-              <Github className="h-4 w-4" />
-              Войти через GitHub
+              <ArrowRight className="h-4 w-4" />
+              Создать аккаунт
             </Link>
           </div>
         </div>
