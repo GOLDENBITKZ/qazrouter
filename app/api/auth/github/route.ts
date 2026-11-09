@@ -4,8 +4,10 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
   const supabase = await createSupabaseServerClient();
-  const origin =
-    process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin;
+  const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const origin = productionHost
+    ? `https://${productionHost.replace(/^https?:\/\//, "")}`
+    : process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin;
   const callbackUrl = new URL("/auth/callback", origin);
 
   const { data, error } = await supabase.auth.signInWithOAuth({
