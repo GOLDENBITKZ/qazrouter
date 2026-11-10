@@ -75,6 +75,7 @@ export function VastModelsCard({ enabled, configured, initial, setupError }: {
             <p className="text-sm font-medium text-slate-200">{spec.label}</p>
             <p className="mt-2 text-xs leading-5 text-slate-500">{spec.description}</p>
             <p className="mt-3 text-[10px] text-slate-400">{spec.inputPricePerMillionKzt} ₸ вход / {spec.outputPricePerMillionKzt} ₸ выход за 1 млн токенов</p>
+            <p className="mt-1 text-[10px] text-slate-400">Контекст 8K токенов вместе с ответом</p>
             <p className="mt-1 font-mono text-[9px] text-slate-600">{spec.huggingFaceId}</p>
           </button>
         ))}
