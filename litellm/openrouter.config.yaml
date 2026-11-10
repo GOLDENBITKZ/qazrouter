@@ -1,0 +1,125 @@
+# Quality-preserving маршрутизация через OpenRouter.
+# Fallback разрешён только между провайдерами одного и того же model slug.
+
+model_list:
+  - model_name: kz-deepseek
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4.1-flash-1017
+      api_key: os.environ/OPENROUTER_API_KEY
+      timeout: 46
+      num_retries: 0
+      extra_body:
+        provider:
+          sort: price
+          data_collection: deny
+          zdr: true
+          require_parameters: true
+          allow_fallbacks: true
+    model_info:
+      mode: chat
+
+  - model_name: kz-gemini
+    litellm_params:
+      model: openrouter/google/gemini-omni-1.2-flash
+      api_key: os.environ/OPENROUTER_API_KEY
+      timeout: 46
+      num_retries: 0
+      extra_body:
+        provider:
+          sort: price
+          data_collection: deny
+          zdr: true
+          require_parameters: true
+          allow_fallbacks: true
+    model_info:
+      mode: chat
+
+  - model_name: kz-gpt
+    litellm_params:
+      model: openrouter/openai/gpt-6.1-terra-pro
+      api_key: os.environ/OPENROUTER_API_KEY
+      timeout: 46
+      num_retries: 0
+      extra_body:
+        provider:
+          sort: price
+          data_collection: deny
+          zdr: true
+          require_parameters: true
+          allow_fallbacks: true
+    model_info:
+      mode: chat
+
+  - model_name: kz-claude
+    litellm_params:
+      model: openrouter/anthropic/claude-fable-5.2
+      api_key: os.environ/OPENROUTER_API_KEY
+      timeout: 46
+      num_retries: 0
+      extra_body:
+        provider:
+          sort: price
+          data_collection: deny
+          zdr: true
+          require_parameters: true
+          allow_fallbacks: true
+    model_info:
+      mode: chat
+
+  - model_name: kz-qwen
+    litellm_params:
+      model: openrouter/qwen/qwen3.8-omni-flash
+      api_key: os.environ/OPENROUTER_API_KEY
+      timeout: 46
+      num_retries: 0
+      extra_body:
+        provider:
+          sort: price
+          data_collection: deny
+          zdr: true
+          require_parameters: true
+          allow_fallbacks: true
+    model_info:
+      mode: chat
+
+  - model_name: kz-llama
+    litellm_params:
+      model: openrouter/meta-llama/llama-4-maverick
+      api_key: os.environ/OPENROUTER_API_KEY
+      timeout: 46
+      num_retries: 0
+      extra_body:
+        provider:
+          sort: price
+          data_collection: deny
+          zdr: true
+          require_parameters: true
+          allow_fallbacks: true
+    model_info:
+      mode: chat
+
+litellm_settings:
+  drop_params: true
+  num_retries: 0
+  request_timeout: 50
+  set_verbose: false
+  turn_off_message_logging: true
+  cache: true
+  cache_params:
+    type: redis
+    host: os.environ/REDIS_HOST
+    port: os.environ/REDIS_PORT
+    password: os.environ/REDIS_PASSWORD
+    ttl: 3600
+    supported_call_types:
+      - completion
+
+router_settings:
+  redis_host: os.environ/REDIS_HOST
+  redis_port: os.environ/REDIS_PORT
+  redis_password: os.environ/REDIS_PASSWORD
+  enable_pre_call_checks: true
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  store_model_in_db: false

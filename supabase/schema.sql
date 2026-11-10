@@ -62,6 +62,7 @@ create table if not exists public.usage_logs (
   total_tokens integer not null default 0 check (total_tokens >= 0),
   cached_input_tokens integer not null default 0
     check (cached_input_tokens >= 0),
+  provider_cost_usd numeric(18, 8),
   input_price_per_million numeric(12, 4) not null,
   output_price_per_million numeric(12, 4) not null,
   cost_kzt numeric(14, 4) not null check (cost_kzt >= 0),
@@ -85,6 +86,8 @@ alter table public.usage_logs
   add column if not exists pii_policy_version text not null default 'kz-pii-v2';
 alter table public.usage_logs
   add column if not exists pii_risk numeric(5, 4) not null default 0;
+alter table public.usage_logs
+  add column if not exists provider_cost_usd numeric(18, 8);
 
 create index if not exists usage_logs_user_created_idx
   on public.usage_logs(user_id, created_at desc);
@@ -185,6 +188,10 @@ drop function if exists public.charge_usage(
   uuid, uuid, text, text, text, integer, integer, integer, integer,
   numeric, numeric, numeric, integer, jsonb, integer, text, numeric
 );
+drop function if exists public.charge_usage(
+  uuid, uuid, text, text, text, integer, integer, integer, integer,
+  numeric, numeric, numeric, integer, jsonb, integer, text, text, numeric
+);
 
 create or replace function public.charge_usage(
   p_user_id uuid,
@@ -196,6 +203,7 @@ create or replace function public.charge_usage(
   p_output_tokens integer,
   p_total_tokens integer,
   p_cached_input_tokens integer,
+  p_provider_cost_usd numeric,
   p_input_price_per_million numeric,
   p_output_price_per_million numeric,
   p_cost_kzt numeric,
@@ -261,6 +269,7 @@ begin
     output_tokens,
     total_tokens,
     cached_input_tokens,
+    provider_cost_usd,
     input_price_per_million,
     output_price_per_million,
     cost_kzt,
@@ -281,6 +290,8 @@ begin
     greatest(p_output_tokens, 0),
     greatest(p_total_tokens, p_input_tokens + p_output_tokens),
     greatest(p_cached_input_tokens, 0),
+    case when p_provider_cost_usd is null then null
+      else greatest(p_provider_cost_usd, 0) end,
     p_input_price_per_million,
     p_output_price_per_million,
     v_rounded_cost,
@@ -306,12 +317,14 @@ $$;
 
 revoke all on function public.charge_usage(
   uuid, uuid, text, text, text, integer, integer, integer, integer,
-  numeric, numeric, numeric, integer, jsonb, integer, text, text, numeric
+  numeric, numeric, numeric, numeric, integer, jsonb, integer, text, text,
+  numeric
 ) from public, anon, authenticated;
 
 grant execute on function public.charge_usage(
   uuid, uuid, text, text, text, integer, integer, integer, integer,
-  numeric, numeric, numeric, integer, jsonb, integer, text, text, numeric
+  numeric, numeric, numeric, numeric, integer, jsonb, integer, text, text,
+  numeric
 ) to service_role;
 
 -- ------------------------------------------------------------

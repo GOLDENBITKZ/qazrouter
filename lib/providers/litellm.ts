@@ -21,6 +21,7 @@ interface LiteLLMResponse {
     prompt_tokens?: number;
     completion_tokens?: number;
     total_tokens?: number;
+    cost?: number;
     prompt_tokens_details?: {
       cached_tokens?: number;
     };
@@ -119,6 +120,8 @@ export async function completeWithLiteLLM(
         usage.cache_read_input_tokens ||
         0
     ),
+    providerCostUsd:
+      typeof usage.cost === "number" && usage.cost >= 0 ? usage.cost : null,
     providerRequestId: payload.id || null
   };
 }

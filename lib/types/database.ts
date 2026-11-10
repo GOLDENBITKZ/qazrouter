@@ -82,6 +82,7 @@ export interface Database {
           output_tokens: number;
           total_tokens: number;
           cached_input_tokens: number;
+          provider_cost_usd: number | null;
           input_price_per_million: number;
           output_price_per_million: number;
           cost_kzt: number;
@@ -105,6 +106,7 @@ export interface Database {
           output_tokens: number;
           total_tokens: number;
           cached_input_tokens?: number;
+          provider_cost_usd?: number | null;
           input_price_per_million: number;
           output_price_per_million: number;
           cost_kzt: number;
@@ -162,6 +164,7 @@ export interface Database {
           p_output_tokens: number;
           p_total_tokens: number;
           p_cached_input_tokens: number;
+          p_provider_cost_usd: number | null;
           p_input_price_per_million: number;
           p_output_price_per_million: number;
           p_cost_kzt: number;

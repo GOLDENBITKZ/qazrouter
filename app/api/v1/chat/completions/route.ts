@@ -463,6 +463,7 @@ export async function POST(request: NextRequest) {
         p_output_tokens: providerResult.outputTokens,
         p_total_tokens: providerResult.totalTokens,
         p_cached_input_tokens: providerResult.cachedInputTokens,
+        p_provider_cost_usd: providerResult.providerCostUsd,
         p_input_price_per_million: pricing.inputPricePerMillionKzt,
         p_output_price_per_million: pricing.outputPricePerMillionKzt,
         p_cost_kzt: costKzt,

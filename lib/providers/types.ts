@@ -36,6 +36,7 @@ export interface ProviderResult {
   outputTokens: number;
   totalTokens: number;
   cachedInputTokens: number;
+  providerCostUsd: number | null;
   providerRequestId: string | null;
 }
 

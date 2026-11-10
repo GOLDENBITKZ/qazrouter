@@ -97,6 +97,30 @@ routing и spend tracking. На ноябрь 2026 бесплатный кред�
 AI Gateway можно использовать как upstream LiteLLM, но он не заменяет локальный
 PII scanner.
 
+### OpenRouter без downgrade модели
+
+Файл [litellm/openrouter.config.yaml](litellm/openrouter.config.yaml) содержит
+quality-preserving маршрутизацию:
+
+- запрос всегда остаётся на конкретном model slug;
+- fallback разрешён только между провайдерами этой же модели;
+- `sort: price` выбирает дешёвый endpoint;
+- `zdr: true` требует zero-retention;
+- `data_collection: deny` исключает сбор данных;
+- `require_parameters: true` не позволяет тихо выбросить параметры.
+
+Включение:
+
+```dotenv
+LITELLM_CONFIG_FILE=./litellm/openrouter.config.yaml
+OPENROUTER_API_KEY=sk-or-v1-...
+```
+
+`allow_fallbacks` в этом конфиге не означает переход на другую модель. Он
+разрешает только резервного провайдера того же точного model slug. Это
+сохраняет качество и тип модели, но провайдеры могут отличаться квантованием,
+лимитами и доступностью.
+
 ## Быстрый запуск
 
 ### 1. Установить зависимости
