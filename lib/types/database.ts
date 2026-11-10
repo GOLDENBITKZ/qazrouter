@@ -9,6 +9,40 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      vast_deployments: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          model: string;
+          instance_id: number | null;
+          state: string;
+          hourly_usd: number;
+          gpu_name: string;
+          tls_cert: string;
+          last_checked_at: string;
+          host: string | null;
+          port: number | null;
+          expires_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          user_id: string | null;
+          model: string;
+          instance_id?: number | null;
+          state: string;
+          hourly_usd: number;
+          gpu_name: string;
+          tls_cert: string;
+          last_checked_at?: string;
+          host?: string | null;
+          port?: number | null;
+          expires_at: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["vast_deployments"]["Insert"]>;
+        Relationships: [];
+      };
       users: {
         Row: {
           id: string;

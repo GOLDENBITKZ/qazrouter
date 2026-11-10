@@ -1,10 +1,15 @@
+import { VAST_MODELS } from "../vast/catalog";
+
 export const PUBLIC_MODELS = [
   "kz-deepseek",
   "kz-gemini",
   "kz-gpt",
   "kz-claude",
   "kz-qwen",
-  "kz-llama"
+  "kz-llama",
+  "kz-vast-qwen",
+  "kz-vast-coder",
+  "kz-vast-llama"
 ] as const;
 
 export type PublicModel = (typeof PUBLIC_MODELS)[number];
@@ -14,6 +19,7 @@ export type ModelProvider =
   | "openai"
   | "anthropic"
   | "openrouter"
+  | "vastai"
   | "groq";
 
 export interface ModelPricing {
@@ -31,6 +37,15 @@ export interface ModelPricing {
  * вынесена отдельно, потому что провайдеры считают её дороже.
  */
 export const MODEL_CATALOG: Record<PublicModel, ModelPricing> = {
+  "kz-vast-qwen": {
+    ...VAST_MODELS["kz-vast-qwen"], publicName: "kz-vast-qwen", provider: "vastai"
+  },
+  "kz-vast-coder": {
+    ...VAST_MODELS["kz-vast-coder"], publicName: "kz-vast-coder", provider: "vastai"
+  },
+  "kz-vast-llama": {
+    ...VAST_MODELS["kz-vast-llama"], publicName: "kz-vast-llama", provider: "vastai"
+  },
   "kz-deepseek": {
     publicName: "kz-deepseek",
     provider: "deepseek",
