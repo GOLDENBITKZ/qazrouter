@@ -8,6 +8,8 @@ import {
   PUBLIC_MODELS
 } from "@/lib/billing/pricing";
 import { completeWithLiteLLM } from "@/lib/providers/litellm";
+import { completeWithVast } from "@/lib/providers/vastai";
+import { isVastModel } from "@/lib/vast/catalog";
 import {
   ProviderError,
   type ChatMessage,
@@ -359,6 +361,11 @@ export async function POST(request: NextRequest) {
 
   let protectedMessages;
 
+  if (isVastModel(modelValue) && process.env.PII_STRICT_MODE === "false") {
+    return openAIError(503, "Для GPU Vast.ai обязательна strict PII-защита.",
+      "server_error", "pii_strict_required");
+  }
+
   try {
     protectedMessages = await protectChatMessages(messages, requestId, {
       stop,
@@ -441,7 +448,9 @@ export async function POST(request: NextRequest) {
     });
 
   try {
-    const providerResult = await completeWithLiteLLM(completionRequest);
+    const providerResult = isVastModel(modelValue)
+      ? await completeWithVast(completionRequest)
+      : await completeWithLiteLLM(completionRequest);
     const pricing = MODEL_CATALOG[modelValue];
     const costKzt = calculateCostKzt(
       modelValue,

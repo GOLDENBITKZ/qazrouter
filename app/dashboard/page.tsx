@@ -16,6 +16,10 @@ import { redirect } from "next/navigation";
 import { ApiKeysCard, type ApiKeyListItem } from "@/components/dashboard/api-keys-card";
 import { BalanceCard } from "@/components/dashboard/balance-card";
 import { QuickstartCard } from "@/components/dashboard/quickstart-card";
+import { VastModelsCard } from "@/components/dashboard/vast-models-card";
+import { canDeployVast, vastSettings } from "@/lib/vast/config";
+import { deploymentView, getDeployment } from "@/lib/vast/deployments";
+import { isVastModel, type DeploymentView } from "@/lib/vast/catalog";
 import { BrandMark, StatusDot } from "@/components/brand-mark";
 import {
   formatKzt,
@@ -172,6 +176,18 @@ export default async function DashboardPage() {
     : process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
       "https://your-domain.kz";
 
+  let vastConfigured = false;
+  let vastDeployment: DeploymentView | null = null;
+  let vastSetupError: string | undefined;
+  try {
+    vastSettings();
+    vastConfigured = true;
+    const row = await getDeployment(user.id);
+    vastDeployment = row ? deploymentView(row) : null;
+  } catch {
+    if (vastConfigured) vastSetupError = "Не удалось прочитать состояние GPU. Примените миграцию supabase/vast.sql и обновите страницу.";
+  }
+
   return (
     <main className="min-h-screen">
       <header className="sticky top-0 z-30 border-b border-white/[0.07] bg-[#070b11]/85 backdrop-blur-xl">
@@ -268,7 +284,7 @@ export default async function DashboardPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500">Моделей доступно</span>
+                <span className="text-xs text-slate-500">Моделей в каталоге</span>
                 <span className="font-mono text-xs text-mint-400">
                   {PUBLIC_MODELS.length}
                 </span>
@@ -303,6 +319,8 @@ export default async function DashboardPage() {
             </div>
           </div>
         </div>
+
+        <VastModelsCard enabled={canDeployVast(user.id)} configured={vastConfigured} initial={vastDeployment} setupError={vastSetupError} />
 
         <div className="mt-4 grid gap-4 lg:grid-cols-[1.15fr_.85fr]">
           <ApiKeysCard keys={keys} />
@@ -435,7 +453,10 @@ export default async function DashboardPage() {
                       {model.publicName}
                     </p>
                     <span className="rounded bg-mint-400/[0.08] px-1.5 py-0.5 text-[8px] uppercase tracking-wider text-mint-400">
-                      online
+                      {isVastModel(model.publicName)
+                        ? vastDeployment?.model === model.publicName && vastDeployment.state === "ready"
+                          ? "готова" : "по запросу"
+                        : "online"}
                     </span>
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-2 text-[9px] text-slate-600">

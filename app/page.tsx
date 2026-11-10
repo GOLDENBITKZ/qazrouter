@@ -20,6 +20,7 @@ import Link from "next/link";
 
 import { BrandMark, StatusDot } from "@/components/brand-mark";
 import { MODEL_CATALOG } from "@/lib/billing/pricing";
+import { isVastModel } from "@/lib/vast/catalog";
 
 const apiExample = `curl https://your-domain.kz/api/v1/chat/completions \\
   -H "Authorization: Bearer kz_live_..." \\
@@ -41,8 +42,8 @@ const features = [
   {
     icon: Route,
     eyebrow: "SMART ROUTING",
-    title: "Один API — шесть моделей",
-    text: "DeepSeek, Gemini, GPT, Claude, Qwen и Llama маршрутизируются через единый LiteLLM-контур."
+    title: "Общий API и свои GPU",
+    text: "Облачные модели работают через LiteLLM, а Qwen, Coder и Llama можно развернуть на личном GPU Vast.ai из кабинета."
   },
   {
     icon: WalletCards,
@@ -177,11 +178,11 @@ export default async function HomePage({
             .
           </h1>
           <p className="mt-7 max-w-xl text-lg leading-8 text-slate-400">
-            Оплата в тенге, закрывающие документы для бухгалтерии,{" "}
+            Оплата в тенге, закрывающие документы для бухгалтерии и{" "}
             <span className="font-medium text-slate-200">
-              100% комплаенс с МЦРИАП
+              обезличивание запросов
             </span>{" "}
-            по архитектуре обработки данных.
+            перед вызовом моделей.
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -312,7 +313,7 @@ export default async function HomePage({
       <div className="relative z-10 border-y border-white/[0.06] bg-white/[0.018]">
         <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-white/[0.06] px-5 sm:px-8 lg:grid-cols-4 lg:px-10">
           {[
-            ["6 моделей", "frontier-класса"],
+            [`${Object.keys(MODEL_CATALOG).length} моделей`, "в каталоге"],
             ["₸ KZT", "прозрачный биллинг"],
             ["< 1 сек", "оверлей фильтра"],
             ["1 API", "OpenAI-compatible"]
@@ -426,12 +427,15 @@ export default async function HomePage({
                   {model.outputPricePerMillionKzt} ₸
                 </p>
                 <p className="hidden text-right text-sm text-slate-500 sm:block">
-                  128K+
+                  {isVastModel(model.publicName) ? "8K" : "128K+"}
                 </p>
               </div>
             ))}
             <div className="flex flex-col gap-3 border-t border-white/[0.07] bg-white/[0.02] px-5 py-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-7">
-              <span>Пополнение от 5 000 ₸. Комиссия сервиса уже включена.</span>
+              <span className="max-w-2xl leading-5">
+                Пополнение от 5 000 ₸. Для kz-vast-* аренда GPU и трафик
+                оплачиваются отдельно в Vast.ai; модель сначала нужно запустить в кабинете.
+              </span>
               <Link
                 href="/login?mode=register"
                 className="inline-flex items-center gap-1.5 font-medium text-mint-400 hover:text-white"
