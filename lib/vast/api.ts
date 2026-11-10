@@ -28,9 +28,9 @@ export class VastApiError extends Error {
   }
 }
 
-export async function vastApi<T>(path: string, method = "GET", body?: unknown): Promise<T> {
+export async function vastApi<T>(path: string, method = "GET", body?: unknown, version: "v0" | "v1" = "v0"): Promise<T> {
   // Fixed control-plane origin. Never return upstream bodies (may contain env/secrets).
-  const response = await fetch(`https://console.vast.ai/api/v0/${path}`, {
+  const response = await fetch(`https://console.vast.ai/api/${version}/${path}`, {
     method,
     headers: { Authorization: `Bearer ${vastSettings().apiKey}`, "Content-Type": "application/json" },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),

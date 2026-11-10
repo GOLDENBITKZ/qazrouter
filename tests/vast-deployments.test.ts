@@ -102,6 +102,12 @@ describe("durable paid deployment lifecycle", () => {
     vi.mocked(workerJson).mockResolvedValueOnce({ data: [{ id: row.model }] });
     expect((await refreshDeployment(row)).state).toBe("ready");
     expect(row.instance_id).toBe(456);
+    const [path, method, , version] = vi.mocked(vastApi).mock.calls[1];
+    const url = new URL(path, "https://console.vast.ai/api/v1/");
+    expect(method).toBe("GET");
+    expect(version).toBe("v1");
+    expect(url.searchParams.get("limit")).toBe("2");
+    expect(JSON.parse(url.searchParams.get("select_filters")!)).toEqual({ label: { eq: `qzr-${row.id}` } });
   });
   it("rejects a price increase before reserving or renting any GPU", async () => {
     vi.mocked(searchOffers).mockResolvedValueOnce([{ id: 123, dph_total: 0.4 } as never]);

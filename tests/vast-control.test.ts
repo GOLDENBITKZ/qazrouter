@@ -70,6 +70,14 @@ describe("Vast.ai control plane", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("secret prompt and token", { status: 500 })));
     await expect(vastApi("instances/")).rejects.toThrow("Vast.ai API: HTTP 500.");
   });
+  it("uses v1 explicitly for filtered instance listing while retaining v0 for instance management", async () => {
+    const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(Response.json({ instances: [] })));
+    vi.stubGlobal("fetch", fetchMock);
+    await vastApi("instances/?limit=2", "GET", undefined, "v1");
+    expect(fetchMock.mock.calls[0][0]).toBe("https://console.vast.ai/api/v1/instances/?limit=2");
+    await vastApi("instances/456/");
+    expect(fetchMock.mock.calls[1][0]).toBe("https://console.vast.ai/api/v0/instances/456/");
+  });
   it.each(["127.0.0.1", "10.1.1.1", "169.254.169.254", "172.16.2.1", "192.168.1.1", "100.64.1.1", "::1", "evil.example"])("rejects worker SSRF address %s", host => {
     expect(workerAddress({ id: 1, label: "", actual_status: "running", public_ipaddr: host,
       ports: { "8443/tcp": [{ HostPort: "12345" }] } })).toBeNull();

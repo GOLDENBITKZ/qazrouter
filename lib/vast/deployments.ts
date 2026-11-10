@@ -145,7 +145,13 @@ async function locateInstance(row: DeploymentRow): Promise<VastInstance | null> 
       throw error;
     }
   }
-  const result = await vastApi<{ instances: VastInstance[] }>("instances/");
+  // v0 listing is retired. Filter the paginated v1 API by our durable label;
+  // two results are sufficient to detect an ambiguous create without scanning the account.
+  const query = new URLSearchParams({
+    select_filters: JSON.stringify({ label: { eq: `qzr-${row.id}` } }),
+    limit: "2"
+  });
+  const result = await vastApi<{ instances: VastInstance[] }>(`instances/?${query}`, "GET", undefined, "v1");
   if (!Array.isArray(result.instances)) throw new Error("Не удалось сверить заказ GPU.");
   const matches = result.instances.filter(instance => instance.label === `qzr-${row.id}`);
   if (matches.length > 1) throw new Error("Обнаружено несколько GPU с одной меткой. Нужна проверка владельцем.");
